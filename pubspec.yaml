@@ -6,6 +6,12 @@ version: 1.0.0+1
 environment:
   sdk: '>=2.19.6 <3.0.0'
 dependencies:
+
+  # haishin tests: failed to build: error: invalid source release: 17
+  # haishin_kit: ^0.10.0
+  # permission_handler: any
+  # audio_session: any
+
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
