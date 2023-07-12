@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rtmp_streaming_prototype/haishin_kit_test_page.dart';
+import 'package:flutter_rtmp_streaming_prototype/apivideo/apivideo_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Container(),
+      home: const ApiVideoPage(),
     );
   }
 }

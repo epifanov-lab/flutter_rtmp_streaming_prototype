@@ -10,14 +10,14 @@ import 'package:haishin_kit/rtmp_stream.dart';
 import 'package:haishin_kit/video_source.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class HaishinKitTestPage extends StatefulWidget {
-  const HaishinKitTestPage({Key? key}) : super(key: key);
+class HaishinKitPage extends StatefulWidget {
+  const HaishinKitPage({Key? key}) : super(key: key);
 
   @override
-  State<HaishinKitTestPage> createState() => _HaishinKitTestPageState();
+  State<HaishinKitPage> createState() => _HaishinKitPageState();
 }
 
-class _HaishinKitTestPageState extends State<HaishinKitTestPage> {
+class _HaishinKitPageState extends State<HaishinKitPage> {
   RtmpConnection? _connection;
   RtmpStream? _stream;
   bool _recording = false;
