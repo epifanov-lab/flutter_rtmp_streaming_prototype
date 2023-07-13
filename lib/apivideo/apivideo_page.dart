@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rtmp_streaming_prototype/apivideo/types/params.dart';
 import 'package:flutter_rtmp_streaming_prototype/utils.dart';
+import 'package:flutter_rtmp_streaming_prototype/widgets/camera_switch_button.dart';
+import 'package:flutter_rtmp_streaming_prototype/widgets/mic_toggle_button.dart';
+import 'package:flutter_rtmp_streaming_prototype/widgets/settings_button.dart';
 
 class ApiVideoPage extends StatefulWidget {
   const ApiVideoPage({Key? key}) : super(key: key);
@@ -14,7 +17,10 @@ class ApiVideoPage extends StatefulWidget {
 class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver {
   final config = Params();
   late final ApiVideoLiveStreamController _controller;
+
   bool _isStreaming = false;
+  bool _isFrontalCamera = true;
+  bool _isMicEnabled = true;
 
   void _setIsStreaming(bool isStreaming) {
     if (!mounted) {
@@ -27,9 +33,7 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     _controller = _createLiveStreamController();
-    _controller.initialize().catchError((e) {
-      showSnackBar(context, e.toString());
-    });
+    _controller.initialize().catchError((e) => showSnackBar(context, e.toString()));
     super.initState();
   }
 
@@ -108,10 +112,20 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
     }
   }
 
-  Future<void> _onTapSettings(BuildContext context) async {
+  Future<void> _onTapSettings() async {
     /*await //TODO: bottom sheet with stream url and key */
     _controller.setVideoConfig(config.video);
     _controller.setAudioConfig(config.audio);
+  }
+
+  void _onTapCameraSwitch() {
+    _controller.switchCamera();
+    setState(() => _isFrontalCamera = !_isFrontalCamera);
+  }
+
+  Future<void> _onTapMicToggle() async {
+    await _controller.toggleMute();
+    setState(() => _isMicEnabled = !_isMicEnabled);
   }
 
   @override
@@ -123,9 +137,34 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
           Center(
             child: ApiVideoCameraPreview(controller: _controller),
           ),
-          //TODO: camera switch button
-          //TODO: microphone on/off button
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 64,
+                horizontal: 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SettingsButtonWidget(
+                    onTap: _onTapSettings,
+                  ),
+                  const SizedBox(height: 8),
+                  CameraSwitchButtonWidget(
+                    onTap: _onTapCameraSwitch,
+                  ),
+                  const SizedBox(height: 8),
+                  MicToggleButtonWidget(
+                    isMicEnabled: _isMicEnabled,
+                    onTap: _onTapMicToggle,
+                  ),
+                ],
+              ),
+            ),
+          )
           //TODO: go live/end stream button
+          //TODO: show settings button
         ],
       ),
     );
