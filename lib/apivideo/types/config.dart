@@ -28,7 +28,7 @@ String bitrateToPrettyString(int bitrate) {
   return "${bitrate / 1000} Kbps";
 }
 
-class Params {
+class Config {
   final VideoConfig video = VideoConfig.withDefaultBitrate();
   final AudioConfig audio = AudioConfig();
 

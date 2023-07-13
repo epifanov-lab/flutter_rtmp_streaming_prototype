@@ -1,7 +1,8 @@
 import 'package:apivideo_live_stream/apivideo_live_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_rtmp_streaming_prototype/apivideo/types/params.dart';
+import 'package:flutter_rtmp_streaming_prototype/apivideo/settings_dialog.dart';
+import 'package:flutter_rtmp_streaming_prototype/apivideo/types/config.dart';
 import 'package:flutter_rtmp_streaming_prototype/utils.dart';
 import 'package:flutter_rtmp_streaming_prototype/widgets/camera_switch_button.dart';
 import 'package:flutter_rtmp_streaming_prototype/widgets/mic_toggle_button.dart';
@@ -15,9 +16,9 @@ class ApiVideoPage extends StatefulWidget {
 }
 
 class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver {
-  final config = Params();
   late final ApiVideoLiveStreamController _controller;
 
+  Config config = Config();
   bool _isStreaming = false;
   bool _isFrontalCamera = true;
   bool _isMicEnabled = true;
@@ -113,7 +114,22 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
   }
 
   Future<void> _onTapSettings() async {
-    /*await //TODO: bottom sheet with stream url and key */
+    final result = await showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return SettingsDialog(config: config);
+      },
+    );
+    if (result == null) {
+      return;
+    }
+    config = result;
     _controller.setVideoConfig(config.video);
     _controller.setAudioConfig(config.audio);
   }
@@ -164,7 +180,6 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
             ),
           )
           //TODO: go live/end stream button
-          //TODO: show settings button
         ],
       ),
     );
