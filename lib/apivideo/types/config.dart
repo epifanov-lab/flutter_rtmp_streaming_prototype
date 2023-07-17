@@ -33,7 +33,7 @@ class Config {
   final AudioConfig audio = AudioConfig();
 
   String rtmpUrl = "rtmp://global-live.uscreen.app:5222/app";
-  String streamKey = "cd176f2f-9b30-445c-4675-70f2fa64c6b5";
+  String streamKey = "8c802540-508b-c0c4-1797-726c93f84fb1";
 
   String getResolutionToString() {
     return video.resolution.toPrettyString();

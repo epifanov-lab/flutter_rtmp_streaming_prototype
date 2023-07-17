@@ -5,6 +5,7 @@ import 'package:flutter_rtmp_streaming_prototype/apivideo/settings_dialog.dart';
 import 'package:flutter_rtmp_streaming_prototype/apivideo/types/config.dart';
 import 'package:flutter_rtmp_streaming_prototype/utils.dart';
 import 'package:flutter_rtmp_streaming_prototype/widgets/camera_switch_button.dart';
+import 'package:flutter_rtmp_streaming_prototype/widgets/go_live_button.dart';
 import 'package:flutter_rtmp_streaming_prototype/widgets/mic_toggle_button.dart';
 import 'package:flutter_rtmp_streaming_prototype/widgets/settings_button.dart';
 
@@ -54,6 +55,7 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
       onConnectionSuccess: () {
         print('Connection succeeded');
         showSnackBar(context, 'Connection succeeded');
+        _setIsStreaming(true);
       },
       onConnectionFailed: (error) {
         print('Connection failed: $error');
@@ -65,16 +67,20 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
         showSnackBar(context, 'Disconnected');
         _setIsStreaming(false);
       },
+      onError: (e) {
+        print('Error: $e');
+        showSnackBar(context, 'Error: $e');
+        _setIsStreaming(false);
+      }
     );
   }
 
-  Future<void> onStartStreamingButtonPressed() async {
+  Future<void> _onStartStreamingButtonPressed() async {
     try {
       await _controller.startStreaming(
         streamKey: config.streamKey,
         url: config.rtmpUrl,
       );
-      _setIsStreaming(true);
     } catch (e) {
       if (e is PlatformException) {
         showCustomDialog(
@@ -92,10 +98,10 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
     }
   }
 
-  Future<void> onStopStreamingButtonPressed() async {
+  Future<void> _onStopStreamingButtonPressed() async {
     try {
-      await _controller.stopStreaming();
       _setIsStreaming(false);
+      await _controller.stopStreaming();
     } catch (e) {
       if (e is PlatformException) {
         showCustomDialog(
@@ -157,7 +163,7 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
             alignment: Alignment.topRight,
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                vertical: 64,
+                vertical: 80,
                 horizontal: 16,
               ),
               child: Column(
@@ -185,50 +191,11 @@ class _ApiVideoPageState extends State<ApiVideoPage> with WidgetsBindingObserver
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               child: GoLiveEndStreamButtonWidget(
                 isStreaming: _isStreaming,
-                onTap: _isStreaming ? onStopStreamingButtonPressed : onStartStreamingButtonPressed,
+                onTap: _isStreaming ? _onStopStreamingButtonPressed : _onStartStreamingButtonPressed,
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class GoLiveEndStreamButtonWidget extends StatelessWidget {
-  final bool isStreaming;
-  final Function onTap;
-
-  const GoLiveEndStreamButtonWidget({
-    Key? key,
-    required this.isStreaming,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(100),
-        child: Material(
-          color: isStreaming ? Colors.white : Colors.blue,
-          child: InkWell(
-            onTap: () => onTap(),
-            borderRadius: BorderRadius.circular(24),
-            child: Center(
-              child: Text(
-                isStreaming ? 'End streaming' : 'Go live',
-                style: TextStyle(
-                  color: isStreaming ? Colors.blue : Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
